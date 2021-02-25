@@ -1,0 +1,189 @@
+import React, { useEffect, useState } from "react";
+import './StockPage.css';
+import LoadingBars from '../../components/LoadingBars/LoadingBars';
+import Chart from '../../components/Chart/Chart';
+import { GREEN, WHITE, RED } from '../../constants/colors';
+
+const stockController = require('../../controllers/stockController');
+const storeController = require('../../controllers/storeController');
+
+const store = storeController.getStore();
+/*
+OPEN, HIGH, LOW, VOLUME, MARKET CAP, PE RATIO, PREV CLOSE, div yield,
+50 day avg, 200 day avg, 52 week high, 52 week low
+
+ask: 0
+askSize: 9
+averageDailyVolume3Month: 44658776
+averageDailyVolume10Day: 77585220
+bid: 0
+bidSize: 8
+currency: "USD"
+exchange: "NMS"
+exchangeDataDelayedBy: 0
+exchangeTimezoneName: "America/New_York"
+exchangeTimezoneShortName: "EST"
+fiftyDayAverage: 561.29395
+fiftyDayAverageChange: 102.39606
+fiftyDayAverageChangePercent: 0.18242858
+fiftyTwoWeekHigh: 695
+fiftyTwoWeekHighChange: -31.309998
+fiftyTwoWeekHighChangePercent: -0.045050357
+fiftyTwoWeekLow: 70.102
+fiftyTwoWeekLowChange: 593.588
+fiftyTwoWeekLowChangePercent: 8.467491
+fullExchangeName: "NasdaqGS"
+gmtOffSetMilliseconds: -18000000
+market: "us_market"
+marketState: "PREPRE"
+postMarketChange: -1.4500122
+postMarketChangePercent: -0.21847734
+postMarketPrice: 662.24
+postMarketTime: 1609203599
+preMarketChange: 0
+preMarketChangePercent: 0
+preMarketPrice: 0
+preMarketTime: 0
+quoteSourceName: "Delayed Quote"
+quoteType: "EQUITY"
+regularMarketChange: 1.9199829
+regularMarketChangePercent: 0.29012844
+regularMarketDayHigh: 681.4
+regularMarketDayLow: 660.8
+regularMarketOpen: 674.51
+regularMarketPreviousClose: 661.77
+regularMarketPrice: 663.69
+regularMarketTime: 1609189202
+regularMarketVolume: 32278561
+shortName: "Tesla, Inc."
+sourceInterval: 15
+symbol: "TSLA"
+tradeable: false
+twoHundredDayAverage: 402.01407
+twoHundredDayAverageChange: 261.67593
+twoHundredDayAverageChangePercent: 0.6509124
+*/
+
+
+const StockPage = (props) => {
+  const quote = props.match.params.quote;
+
+  const [quoteData, setQuoteData] = useState();
+  const [chartData, setChartData] = useState();
+  const [watchlist, setWatchlist] = useState(storeController.getWatchlist() || []);
+  // 1 day - 1 min
+  // 5 day - 15 min
+  // 1 month - 1 day
+  // 6 month - 1 day
+  // YTD - 1 week
+  // 1 year - 1 week
+  // 5 year - 1 month
+  // max - 1 month
+
+  useEffect(() => {
+    (async () => {
+      const newChartData = await stockController.getStockChart(quote)
+      setChartData(newChartData);
+      const newQuoteData = await stockController.getStock(quote)
+      setQuoteData(newQuoteData);
+    })();
+  }, [quote])
+
+  function color(q) {
+    return q === 0 ? WHITE :
+           q > 0 ? GREEN : RED;
+  }
+  
+  function largeNumberFormat(value) {
+    let v = Math.abs(Number(value))
+    return v >= 1.0e+12 ? (v/1.0e+12).toFixed(2) + 'T' :
+      v >= 1.0e+9 ? (v/1.0e+9).toFixed(2) + 'B' :
+      v >= 1.0e+6 ? (v/1.0e+6).toFixed(2) + 'M' :
+      v >= 1.0e+3 ? (v/1.0e+3).toFixed(2) + 'K' :
+      (v).toFixed(2)
+  }
+
+  function valueExists(value) {
+    return value > 0 ? value : 'N/A'
+  }
+
+  function date(value) {
+    return value > 0 ? new Date(value * 1000).toDateString() : 'N/A'
+  }
+
+/*   const removeFromWatchlist = () => {
+    storeController.removeFromWatchlist(quote);
+    setWatchlist(storeController.getWatchlist());
+  }
+
+  const addToWatchlist = () => {
+    storeController.addToWatchlist(quote);
+    setWatchlist(storeController.getWatchlist());
+  } */
+
+	store.onDidChange('watchlist', (newValue, oldValue) => {
+		setWatchlist(newValue);
+	});
+
+  return (
+    <div>
+      { 
+        quoteData && quoteData !== {} ? 
+        <div class="quote-list">
+          {/* <button onClick={() => console.log(quoteData)}>quote data</button>
+          <button onClick={() => console.log(chartData)}>chart data</button> */}
+          <div class="title">
+            <div>
+              <h1>{quoteData.shortName} ({quoteData.symbol})</h1>
+              <h4>{quoteData.fullExchangeName}</h4>
+
+              { watchlist.includes(quote) ? 
+                <button onClick={() => storeController.removeFromWatchlist(quote)}>remove from watchlist</button> :
+                <button onClick={() => storeController.addToWatchlist(quote)}>add to watchlist</button>
+              }
+              <button onClick={() => storeController.buyShares(quote, 4, 30.20, quoteData.regularMarketPrice)}>buy</button>
+              <button onClick={() => storeController.sellShares(quote, 1, 129.20, quoteData.regularMarketPrice)}>sell</button>
+            </div>
+            <h1 class="market-price">${quoteData.regularMarketPrice.toFixed(2)}</h1>
+            <h4>{quoteData.currency}</h4>
+            <h2 style={{ color: color(quoteData.regularMarketChange), fontSize: '30px' }}>{quoteData.regularMarketChange.toFixed(2)}</h2>
+            <h2 style={{ color: color(quoteData.regularMarketChangePercent), fontSize: '30px' }}>({quoteData.regularMarketChangePercent.toFixed(2)}%)</h2>
+            <i class={quoteData.regularMarketChange > 0 ? "fas fa-arrow-up" : "fas fa-arrow-down" }
+              style={{ color: color(quoteData.regularMarketChange) }}></i>
+          </div>
+          <div>
+            {/* <button>Buy</button>
+            <button>Sell</button> */}
+          </div>
+          { 
+            chartData ? 
+            <div class="margin-top"><Chart data={chartData} /></div> :
+            <LoadingBars /> 
+          }
+          <div class="margin-top">
+            <ul>
+              <li>Open: {quoteData.regularMarketOpen.toFixed(2)}</li>
+              <li>Day's Range: {quoteData.regularMarketDayLow.toFixed(2)} - {quoteData.regularMarketDayHigh.toFixed(2)}</li>
+              <li>52 Week Range: {quoteData.fiftyTwoWeekLow.toFixed(2)} - {quoteData.fiftyTwoWeekHigh.toFixed(2)}</li>
+              <li>Volume: {largeNumberFormat(quoteData.regularMarketVolume)}</li>
+              <li>Avg. Volume: {largeNumberFormat(quoteData.averageDailyVolume3Month)}</li>
+              <li>Ask: {quoteData.ask.toFixed(2)} x {quoteData.askSize * 100}</li>
+              <li>Bid: {quoteData.bid.toFixed(2)} x {quoteData.bidSize * 100}</li>
+              <li>Market Cap: {largeNumberFormat(quoteData.marketCap)}</li>
+              <li>PE Ratio: {valueExists(quoteData.trailingPE)}</li>
+              <li>Total Shares: {largeNumberFormat(quoteData.sharesOutstanding)}</li>
+              <li>Dividend Date: {date(quoteData.dividendDate)}</li>
+              <li>Dividend & Yield: {quoteData.trailingAnnualDividendRate.toFixed(2)} ({(quoteData.trailingAnnualDividendYield * 100).toFixed(2)}%)</li>
+              <li>Earnings Date: {date(quoteData.earningsTimestamp)}</li>
+            </ul>
+          </div>
+        </div> :
+        <div>
+          <h3>Getting data for {quote}...</h3> 
+          <LoadingBars />
+        </div>
+      }
+    </div>
+  );  
+}
+export default StockPage;

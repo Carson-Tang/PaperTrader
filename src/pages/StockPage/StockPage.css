@@ -1,0 +1,43 @@
+h1, h2, h3, h4, h5 {
+  color: white;
+  display: inline;
+}
+
+h4 {
+  padding-left: 3px;
+}
+
+h2, h5 {
+  padding-left: 5px;
+}
+
+.quote-list ul {
+  -webkit-column-count: 3;
+  -moz-column-count: 3;
+  column-count: 3;
+  color: white;
+  margin: 0;
+}
+
+.quote-list ul li {
+  margin: 0 0 10px 75px;
+}
+
+i {
+  padding-left: 3px;
+  height: 22px;
+  vertical-align: middle;
+}
+
+.margin-top {
+  margin-top: 50px;
+}
+
+.title {
+  margin-top: 30px;
+  margin-left: 30px;
+}
+
+.market-price {
+  font-size: 50px;
+}

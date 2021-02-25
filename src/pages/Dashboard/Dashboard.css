@@ -1,0 +1,46 @@
+.container {
+  display: flex;
+}
+
+.left-half {
+  flex-grow: 1;
+  padding: 1rem;
+  text-align: center;
+  padding-top: 150px;
+}
+
+.right-half {
+  flex-grow: 2;
+  padding: 1rem;
+  text-align: center;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.right-half table tbody td:first-child {
+  text-align: center;
+}
+
+.right-half table {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.dollar-sign {
+  font-size: 50px;
+}
+
+.dollars {
+  font-size: 75px;
+}
+
+.cents {
+  font-size: 50px;
+}
+
+.table-header {
+  font-size: 40px;
+  color: white;
+}

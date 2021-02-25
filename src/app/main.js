@@ -1,0 +1,28 @@
+const { app, BrowserWindow } = require('electron');
+const isDev = require('electron-is-dev');   
+const path = require('path');
+
+const Store = require('electron-store')
+
+let mainWindow;
+ 
+function createWindow() {
+    mainWindow = new BrowserWindow({
+        width:800,
+        height:600,
+        show: false,
+        webPreferences: {
+            experimentalFeatures: true,
+            nodeIntegration: true,
+        }
+    });
+    const startURL = isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`;
+    Store.initRenderer();
+    mainWindow.loadURL(startURL);
+ 
+    mainWindow.once('ready-to-show', () => mainWindow.show());
+    mainWindow.on('closed', () => {
+        mainWindow = null;
+    });
+}
+app.on('ready', createWindow);
