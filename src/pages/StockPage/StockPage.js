@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import './StockPage.css';
 import LoadingBars from '../../components/LoadingBars/LoadingBars';
 import Chart from '../../components/Chart/Chart';
-import { GREEN, WHITE, RED } from '../../constants/colors';
+import { BACKGROUND, BLUE, GREEN, WHITE, RED } from '../../constants/colors';
 
 const stockController = require('../../controllers/stockController');
 const storeController = require('../../controllers/storeController');
@@ -71,6 +71,9 @@ const StockPage = (props) => {
   const [quoteData, setQuoteData] = useState();
   const [chartData, setChartData] = useState();
   const [watchlist, setWatchlist] = useState(storeController.getWatchlist() || []);
+  const [chartParam, setChartParam] = useState({interval: '1m', duration: '1D'});
+
+  const [drawerOpen, setDrawerOpen] = useState(false);
   // 1 day - 1 min
   // 5 day - 15 min
   // 1 month - 1 day
@@ -82,12 +85,19 @@ const StockPage = (props) => {
 
   useEffect(() => {
     (async () => {
-      const newChartData = await stockController.getStockChart(quote)
+      const newChartData = await stockController.getStockChart(quote, chartParam.duration, chartParam.interval)
       setChartData(newChartData);
       const newQuoteData = await stockController.getStock(quote)
       setQuoteData(newQuoteData);
     })();
   }, [quote])
+
+  useEffect(() => {
+    (async () => {
+      const newChartData = await stockController.getStockChart(quote, chartParam.duration, chartParam.interval)
+      setChartData(newChartData);
+    })();
+  }, [chartParam])
 
   function color(q) {
     return q === 0 ? WHITE :
@@ -109,6 +119,30 @@ const StockPage = (props) => {
 
   function date(value) {
     return value > 0 ? new Date(value * 1000).toDateString() : 'N/A'
+  }
+
+  function adjustContent() {
+    document.getElementById("content").style.marginRight = "450px";
+    document.getElementById("side-drawer").style.width = "450px";
+  }
+
+  function unadjustContent() {
+    document.getElementById("content").style.marginRight = "0";
+    document.getElementById("side-drawer").style.width = "0";
+  }
+
+  function sleep(time) {
+    return new Promise((resolve) => setTimeout(resolve, time));
+  }
+
+  function controlDrawer() {
+    if (!drawerOpen) {
+      setDrawerOpen(true);
+      //adjustContent();
+    } else {
+      setDrawerOpen(false);
+      //sleep(500).then(() => unadjustContent());
+    }
   }
 
 /*   const removeFromWatchlist = () => {
@@ -138,11 +172,12 @@ const StockPage = (props) => {
               <h4>{quoteData.fullExchangeName}</h4>
 
               { watchlist.includes(quote) ? 
-                <button onClick={() => storeController.removeFromWatchlist(quote)}>remove from watchlist</button> :
-                <button onClick={() => storeController.addToWatchlist(quote)}>add to watchlist</button>
+                <button style={{ backgroundColor: RED }} onClick={() => storeController.removeFromWatchlist(quote)}>Remove from Watchlist</button> :
+                <button style={{ backgroundColor: BLUE }} onClick={() => storeController.addToWatchlist(quote)}>Add to Watchlist</button>
               }
-              <button onClick={() => storeController.buyShares(quote, 4, 30.20, quoteData.regularMarketPrice)}>buy</button>
-              <button onClick={() => storeController.sellShares(quote, 1, 129.20, quoteData.regularMarketPrice)}>sell</button>
+              <button style={{ backgroundColor: GREEN }} onClick={() => controlDrawer()}>Buy / Sell</button>
+              <button style={{ backgroundColor: GREEN }} onClick={() => storeController.buyShares(quote, 4, 30.20, quoteData.regularMarketPrice)}>Buy</button>
+              <button style={{ backgroundColor: RED }} onClick={() => storeController.sellShares(quote, 1, 129.20, quoteData.regularMarketPrice)}>Sell</button>
             </div>
             <h1 class="market-price">${quoteData.regularMarketPrice.toFixed(2)}</h1>
             <h4>{quoteData.currency}</h4>
@@ -151,9 +186,55 @@ const StockPage = (props) => {
             <i class={quoteData.regularMarketChange > 0 ? "fas fa-arrow-up" : "fas fa-arrow-down" }
               style={{ color: color(quoteData.regularMarketChange) }}></i>
           </div>
-          <div>
-            {/* <button>Buy</button>
-            <button>Sell</button> */}
+          <div id="chart-time">
+              <button 
+                style={{ borderColor: (chartParam.duration === '1D' ? WHITE : BLUE) }}
+                onClick={() => setChartParam({interval: '1m', duration: '1D'})}
+              >
+                1D
+              </button>
+              <button 
+                style={{ borderColor: (chartParam.duration === '5D' ? WHITE : BLUE) }}
+                onClick={() => setChartParam({interval: '15m', duration: '5D'})}
+              >
+                5D
+              </button>
+              <button 
+                style={{ borderColor: (chartParam.duration === '1M' ? WHITE : BLUE) }}
+                onClick={() => setChartParam({interval: '1d', duration: '1M'})}
+              >
+                1M
+              </button>
+              <button 
+                style={{ borderColor: (chartParam.duration === '6M' ? WHITE : BLUE) }}
+                onClick={() => setChartParam({interval: '1d', duration: '6M'})}
+              >
+                6M
+              </button>
+              <button 
+                style={{ borderColor: (chartParam.duration === 'YTD' ? WHITE : BLUE) }}
+                onClick={() => setChartParam({interval: '5d', duration: 'YTD'})}
+              >
+                YTD
+              </button>
+              <button 
+                style={{ borderColor: (chartParam.duration === '1Y' ? WHITE : BLUE) }}
+                onClick={() => setChartParam({interval: '5d', duration: '1Y'})}
+              >
+                1Y
+              </button>
+              <button 
+                style={{ borderColor: (chartParam.duration === '5Y' ? WHITE : BLUE) }}
+                onClick={() => setChartParam({interval: '1mo', duration: '5Y'})}
+              >
+                5Y
+              </button>
+              <button 
+                style={{ borderColor: (chartParam.duration === 'Max' ? WHITE : BLUE) }}
+                onClick={() => setChartParam({interval: '1mo', duration: 'Max'})}
+              >
+                Max
+              </button>
           </div>
           { 
             chartData ? 
@@ -176,6 +257,17 @@ const StockPage = (props) => {
               <li>Dividend & Yield: {quoteData.trailingAnnualDividendRate.toFixed(2)} ({(quoteData.trailingAnnualDividendYield * 100).toFixed(2)}%)</li>
               <li>Earnings Date: {date(quoteData.earningsTimestamp)}</li>
             </ul>
+          </div>
+          <div className={drawerOpen ? 'side-drawer open' : 'side-drawer'} id="side-drawer">
+            <div>
+              {quoteData.symbol} {quoteData.shortName} {quoteData.fullExchangeName}
+            </div>
+            <div>
+              {quoteData.askSize} {quoteData.bidSize} {quoteData.bid.toFixed(2)} {quoteData.ask.toFixed(2)} 
+              Last {quoteData.regularMarketPrice.toFixed(2)}
+            </div>
+            <button style={{ backgroundColor: GREEN }} onClick={() => storeController.buyShares(quote, 4, 30.20, quoteData.regularMarketPrice)}>Buy</button>
+            <button style={{ backgroundColor: RED }} onClick={() => storeController.sellShares(quote, 1, 129.20, quoteData.regularMarketPrice)}>Sell</button>
           </div>
         </div> :
         <div>

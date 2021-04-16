@@ -6,6 +6,8 @@ Stock data is pulled from the [finance-go](https://piquette.io/projects/finance-
 
 Charts are created with [react-chartjs](https://github.com/reactchartjs/react-chartjs-2) a wrapper for Chart.js in React.
 
+Data is persisted using the [electron-store](https://github.com/sindresorhus/electron-store) library.
+
 ### For Development
 
 #### Environment Setup

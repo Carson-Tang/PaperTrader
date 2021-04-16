@@ -29,7 +29,7 @@ func main() {
 	r.HandleFunc("/quote/{quote}", GetQuote).Methods("GET")
 	r.HandleFunc("/quotes", GetAllQuote).Methods("POST")
 	//r.HandleFunc("/GetQuote", GetQuota).Methods("GET")
-	r.HandleFunc("/chart/{quote}", GetChartBar).Methods("GET")
+	r.HandleFunc("/chart/{quote}", GetChartBar).Methods("POST")
 
 	/* r.HandleFunc("/GetAllQuote", GetAllQuote).Methods("GET")
 	r.HandleFunc("/GetChartBar", GetChartBar).Methods("GET")

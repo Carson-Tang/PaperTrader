@@ -12,7 +12,8 @@ input.search {
 } */
 
 .react-autosuggest__input {
-  padding: 10px 20px;
+  padding: 10px 15px;
+  width: 400px;
   border: 1px solid #515151;
   border-radius: 5px;
   background: #1a1e24;
@@ -36,13 +37,12 @@ input.search {
 
 .react-autosuggest__suggestions-container--open {
   color: black !important; /*idk what this does tbh*/
-  width: 240px;
+  width: 430px;
 }
 
 .react-autosuggest__suggestions-list {
   flex-direction: column !important;
   color: black !important; /*nor this*/
-  /* position: absolute; */
   max-height: 500px;
   overflow-y: auto;
 }
@@ -55,8 +55,13 @@ input.search {
 }
 
 .react-autosuggest__suggestion:last-child {
-  border-bottom: none;
+  /* border-bottom: none; */
   /*make this */
+}
+
+.react-autosuggest__suggestion--highlighted {
+  /* background-color: red; */
+  border: 1px solid white;
 }
 
 /* input:focus {
@@ -106,6 +111,7 @@ input.search {
   border-color: none;
   border: none;
   outline: none;
+  margin-right: 10px;
 }
 
 #stk-button:focus {
@@ -123,6 +129,7 @@ input.search {
   border-color: none;
   border: none;
   outline: none;
+  margin-right: 10px;
 }
 
 #opt-button:focus {
@@ -130,5 +137,10 @@ input.search {
 }
 
 #opt-button:hover {
+  cursor: pointer;
+}
+
+.fa-search {
+  margin-left: 5px;
   cursor: pointer;
 }

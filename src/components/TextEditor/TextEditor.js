@@ -14,7 +14,7 @@ const TextEditor = (code, setCode) => {
       <AceEditor
         mode="python"
         theme="monokai"
-        onChange={text => setCode(text)}
+        //onChange={text => setCode(text)}
         value={code}
         name="UNIQUE_ID_OF_DIV"
         fontSize={14}

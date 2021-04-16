@@ -49,6 +49,10 @@ storeController.removeFromWatchlist = (quote) => {
   store.set('watchlist', watchlist);
 }
 
+storeController.clearWatchlist = () => {
+  store.set('watchlist', []);
+}
+
 // Portfolio Value
 storeController.getPortfolioValue = () => {
   if (!store.get('portfolioValue')) {
@@ -198,6 +202,17 @@ storeController.removeFromOwnedShares = (quote, amount) => {
   }
   return false;
 }
+
+storeController.clearOwnedShares = () => {
+  store.set('ownedShares', []);
+}
+
+
+storeController.clearOwnedShares = () => {
+  // todo
+}
+
+
 
 storeController.testing = () => {
   storeController.setPortfolioValue(1234);

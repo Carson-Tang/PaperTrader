@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import './SearchBar.css'
-import { GREEN } from '../../constants/colors'
+import { GREEN, GREY } from '../../constants/colors'
 import Autosuggest from 'react-autosuggest';
 
 import nasdaqSymbols from '../../constants/nasdaqSymbols.json'
@@ -23,7 +23,7 @@ const stockTickets = () => {
       "Stock Exchange": "NYSE",
     })
   })
-  res = res.map(v => ({ value: v.Symbol, label: v.Symbol }))
+  res = res.map(v => ({ value: v.Symbol, label: v.Symbol, name: v["Company Name"], exchange: v["Stock Exchange"] }))
   //console.log(res)
   return res
 } 
@@ -41,7 +41,9 @@ function getSuggestions(value) {
     return [];
   }
   const regex = new RegExp('^' + escapedValue, 'i');
-  return stockList.filter(l => regex.test(l.label));
+  let x = stockList.filter(l => regex.test(l.label)).slice(0, 3);
+  console.log(x)
+  return x;
 }
 
 const SearchBar = () => {
@@ -56,8 +58,22 @@ const SearchBar = () => {
 
   return (
     <>
-      <button type="button" id="stk-button" onClick={() => setSelectedSearch('STK')} style={{ backgroundColor: selectedSearch === 'STK' ? GREEN : '' }}>STK</button>
-      <button type="button" id="opt-button" onClick={() => setSelectedSearch('OPT')} style={{ backgroundColor: selectedSearch === 'OPT' ? GREEN : '' }}>OPT</button>
+      <button 
+        type="button"
+        id="stk-button"
+        onClick={() => setSelectedSearch('STK')}
+        style={{ backgroundColor: selectedSearch === 'STK' ? GREEN : '' }}
+      >
+        STK
+      </button>
+      <button
+        type="button"
+        id="opt-button"
+        onClick={() => setSelectedSearch('OPT')}
+        style={{ backgroundColor: selectedSearch === 'OPT' ? GREEN : '' }}
+      >
+        OPT
+      </button>
       
       <Autosuggest 
         suggestions={suggestions}
@@ -65,24 +81,27 @@ const SearchBar = () => {
           setSuggestions(getSuggestions(value));
         }}
         onSuggestionsClearRequested={() => setSuggestions([])}
+        onSuggestionSelected={(e, { suggestion }) => {
+          setSearchValue(suggestion.value.toUpperCase());
+        }}
         getSuggestionValue={suggestion => suggestion.value}
-        renderSuggestion={suggestion => <span>{suggestion.label}</span>}
+        renderSuggestion={suggestion => <span>{suggestion.label} &nbsp;&nbsp; {suggestion.name.replace(/(.{34})..+/, "$1...")} ({suggestion.exchange})</span>}
         inputProps={{
           placeholder: "Search by symbol",
           value: searchValue,
           onChange: (_, { newValue, method }) => {
             setSearchValue(newValue.toUpperCase());
-            console.log(newValue)
-            if (method === 'click') {
+            /* if (method === 'click') {
               handleSearch();
-            }
+            } */
           },
           onKeyDown: function onKeyDown(event, data) {
-            if (event.keyCode === 13) {
+            if (event.keyCode === 13) { // enter key
               handleSearch();
             }
           }
         }} />
+        <i class="fa fa-search fa-lg" style={{ color: GREY }} onClick={() => handleSearch()}></i>
     </>
   );
 }

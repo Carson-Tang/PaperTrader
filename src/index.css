@@ -28,6 +28,7 @@ app {
   flex: 1;
   display: flex;
   overflow: auto;
+  height: 100%
 }
 
 nav {
@@ -37,7 +38,8 @@ nav {
 
 .content {
   margin: 0;
-  flex: 1;
+  flex-grow: 1;
   order: 1;
   overflow: auto;
+  vertical-align: ;
 }

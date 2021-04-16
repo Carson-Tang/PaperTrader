@@ -11,6 +11,7 @@ header {
 	position: fixed;
 	background-color: #21ce99;
 	user-select: none;
+	font-weight: bold;
 }
 
 .header {

@@ -90,22 +90,87 @@ type ChartQuery struct {
 	IncludeExt bool `json:"includeExt"` // include extended-hours
 }
 
+type TimePeriod struct {
+	Start struct {
+		Month int `json:"month"`
+		Day int `json:"day"`
+		Year int `json:"year"`
+	} `json:"start"`
+	End struct {
+		Month int `json:"month"`
+		Day int `json:"day"`
+		Year int `json:"year"`
+	} `json:"end"`
+	Interval string `json:"interval"`
+}
+
 func GetChartBar(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
 	queryQuote := vars["quote"]
 
-	code := r.URL.Query().Get("code")
-	fmt.Println("CODE: " + code)
-	code2 := r.URL.Query().Get("code2")
-	fmt.Println("CODE2: " + code2)
+	var timePeriod TimePeriod
+	body, _ := ioutil.ReadAll(r.Body)
+	err := json.Unmarshal(body, &timePeriod)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(timePeriod)
+
+	interval := datetime.OneDay
+	switch timePeriod.Interval {
+	case "1m":
+		interval = datetime.OneMin
+	case "2m":
+		interval = datetime.FifteenMins
+	case "5m":
+		interval = datetime.FiveMins
+	case "15m":
+		interval = datetime.FifteenMins
+	case "30m":
+		interval = datetime.ThirtyMins
+	case "60m":
+		interval = datetime.SixtyMins
+	case "90m":
+		interval = datetime.NinetyMins
+	case "1h":
+		interval = datetime.OneHour
+	case "1d":
+		interval = datetime.OneDay
+	case "5d":
+		interval = datetime.FiveDay
+	case "1mo":
+		interval = datetime.OneMonth
+	case "3mo":
+		interval = datetime.ThreeMonth
+	case "6mo":
+		interval = datetime.SixMonth
+	case "1y":
+		interval = datetime.OneYear
+	case "2y":
+		interval = datetime.TwoYear
+	case "5y":
+		interval = datetime.FiveYear
+	case "10y":
+		interval = datetime.TenYear
+	case "ytd":
+		interval = datetime.YTD
+	case "max":
+		interval = datetime.Max
+	default:
+		interval = datetime.Max
+	}
+
+	fmt.Println(interval)
+
 	p := &chart.Params{
 		Symbol:   queryQuote,
 		Start:    &datetime.Datetime{
-			Month: 1, Day: 1, Year: 2019},
+			Month: timePeriod.Start.Month, Day: timePeriod.Start.Day, Year: timePeriod.Start.Year},
 		End:      &datetime.Datetime{
-			Month: 1, Day: 30, Year: 2021},
-		Interval: datetime.OneDay,
+			Month: timePeriod.End.Month, Day: timePeriod.End.Day, Year: timePeriod.End.Year},
+		Interval: interval,
 	}
 
 	iter := chart.Get(p)
@@ -115,9 +180,12 @@ func GetChartBar(w http.ResponseWriter, r *http.Request) {
 		res = append(res, b)	
 	}
 	if iter.Err() != nil {
+		fmt.Println("gg2")
+		fmt.Println(iter.Err())
 		return
 	}
-	//fmt.Println(res)
+	fmt.Println("gg")
+	fmt.Println(res)
 	json.NewEncoder(w).Encode(res)
 }
 

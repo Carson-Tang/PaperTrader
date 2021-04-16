@@ -1,3 +1,34 @@
-.text {
+.settings .text {
   color: white;
+  margin-left: 20px;
+}
+
+.settings button {
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin: 10px 10px 5px 20px;
+  padding: 5px 10px;
+  color: white;
+  border: none;
+  font-weight: bold;
+  outline: none;
+}
+
+.settings {
+  padding-left: 20px;
+  padding-top: 20px;
+}
+
+.settings input {
+  border-radius: 2px;
+  font-size: 1rem;
+  border: none;
+  padding: 5px 10px;
+  margin-left: 20px;
+  width: 10ch;
+}
+
+.settings h2 {
+  line-height: 2em;
 }

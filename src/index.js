@@ -28,7 +28,7 @@ const Root = (
 
       <app>
         <nav><Sidebar /></nav>
-        <div class="content">
+        <div class="content" id="content">
           <Switch>
             <Route path="/" exact component={App} />
             <Route path="/dashboard" component={Dashboard} />

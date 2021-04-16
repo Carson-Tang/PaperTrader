@@ -52,8 +52,8 @@ const Header = () => {
 				<li></li><li></li><li></li>
 				<li></li><li></li><li></li>
 				<li></li><li></li><li></li>
-				<li></li><li></li><li></li>
-				<li></li><li></li><li></li>
+				{/* <li></li><li></li><li></li> */}
+				{/* <li></li><li></li><li></li> */}
 				<div class="floatright">
 					<li class="searchbar"><SearchBar /></li>
 				</div>
