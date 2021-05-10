@@ -6,7 +6,7 @@ import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/theme-monokai";
 import "ace-builds/src-noconflict/ext-language_tools"
 
-const TextEditor = (code, setCode) => {
+const TextEditor = ({code, setCode}) => {
 
 
   return (
@@ -14,9 +14,9 @@ const TextEditor = (code, setCode) => {
       <AceEditor
         mode="python"
         theme="monokai"
-        //onChange={text => setCode(text)}
+        onChange={text => setCode(text)}
         value={code}
-        name="UNIQUE_ID_OF_DIV"
+        name="code-editor"
         fontSize={14}
         editorProps={{ $blockScrolling: true }}
         enableBasicAutocompletion={true}

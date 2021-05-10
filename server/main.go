@@ -26,6 +26,9 @@ import (
 
 func main() {
 	r := mux.NewRouter()
+
+	r.HandleFunc("/runCode", runCode).Methods("POST")
+
 	r.HandleFunc("/quote/{quote}", GetQuote).Methods("GET")
 	r.HandleFunc("/quotes", GetAllQuote).Methods("POST")
 	//r.HandleFunc("/GetQuote", GetQuota).Methods("GET")

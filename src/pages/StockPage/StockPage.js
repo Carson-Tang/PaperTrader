@@ -3,6 +3,8 @@ import './StockPage.css';
 import LoadingBars from '../../components/LoadingBars/LoadingBars';
 import Chart from '../../components/Chart/Chart';
 import { BACKGROUND, BLUE, GREEN, WHITE, RED } from '../../constants/colors';
+import Dropdown from 'react-dropdown';
+import 'react-dropdown/style.css';
 
 const stockController = require('../../controllers/stockController');
 const storeController = require('../../controllers/storeController');
@@ -71,7 +73,7 @@ const StockPage = (props) => {
   const [quoteData, setQuoteData] = useState();
   const [chartData, setChartData] = useState();
   const [watchlist, setWatchlist] = useState(storeController.getWatchlist() || []);
-  const [chartParam, setChartParam] = useState({interval: '1m', duration: '1D'});
+  const [chartParam, setChartParam] = useState({interval: '15m', duration: '5D'});
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   // 1 day - 1 min
@@ -86,6 +88,7 @@ const StockPage = (props) => {
   useEffect(() => {
     (async () => {
       const newChartData = await stockController.getStockChart(quote, chartParam.duration, chartParam.interval)
+      console.log(newChartData);
       setChartData(newChartData);
       const newQuoteData = await stockController.getStock(quote)
       setQuoteData(newQuoteData);
@@ -176,8 +179,8 @@ const StockPage = (props) => {
                 <button style={{ backgroundColor: BLUE }} onClick={() => storeController.addToWatchlist(quote)}>Add to Watchlist</button>
               }
               <button style={{ backgroundColor: GREEN }} onClick={() => controlDrawer()}>Buy / Sell</button>
-              <button style={{ backgroundColor: GREEN }} onClick={() => storeController.buyShares(quote, 4, 30.20, quoteData.regularMarketPrice)}>Buy</button>
-              <button style={{ backgroundColor: RED }} onClick={() => storeController.sellShares(quote, 1, 129.20, quoteData.regularMarketPrice)}>Sell</button>
+{/*               <button style={{ backgroundColor: GREEN }} onClick={() => storeController.buyShares(quote, 4, 30.20, quoteData.regularMarketPrice)}>Buy</button>
+              <button style={{ backgroundColor: RED }} onClick={() => storeController.sellShares(quote, 1, 129.20, quoteData.regularMarketPrice)}>Sell</button> */}
             </div>
             <h1 class="market-price">${quoteData.regularMarketPrice.toFixed(2)}</h1>
             <h4>{quoteData.currency}</h4>
@@ -237,11 +240,11 @@ const StockPage = (props) => {
               </button>
           </div>
           { 
-            chartData ? 
-            <div class="margin-top"><Chart data={chartData} /></div> :
+            chartData !== null ? 
+            <div class="margin-top"><Chart data={chartData} width={drawerOpen ? 1250 : 1600} /></div> :
             <LoadingBars /> 
           }
-          <div class="margin-top">
+          <div class={`margin-top ${drawerOpen ? 'squish' : ''}`}>
             <ul>
               <li>Open: {quoteData.regularMarketOpen.toFixed(2)}</li>
               <li>Day's Range: {quoteData.regularMarketDayLow.toFixed(2)} - {quoteData.regularMarketDayHigh.toFixed(2)}</li>
@@ -258,14 +261,74 @@ const StockPage = (props) => {
               <li>Earnings Date: {date(quoteData.earningsTimestamp)}</li>
             </ul>
           </div>
-          <div className={drawerOpen ? 'side-drawer open' : 'side-drawer'} id="side-drawer">
-            <div>
-              {quoteData.symbol} {quoteData.shortName} {quoteData.fullExchangeName}
+          <div className={drawerOpen ? 'side-drawer open' : 'side-drawer'} id="side-drawer"
+               style={{ borderLeft: `5px solid ${BLUE}` }} >
+            <div className="quoteName">
+              <h1>{quoteData.symbol}{' '}</h1>
+              <h3>{quoteData.shortName.replace(/(.{12})..+/, "$1...")}</h3>
+              <h4>({quoteData.fullExchangeName})</h4>
             </div>
-            <div>
-              {quoteData.askSize} {quoteData.bidSize} {quoteData.bid.toFixed(2)} {quoteData.ask.toFixed(2)} 
-              Last {quoteData.regularMarketPrice.toFixed(2)}
+
+            <br></br>
+
+            <div className="side-drawer-info">
+              <p class="stacked-text-container">
+                <span class="stacked-text">
+                  <span class="stacked-text-text">Last</span>
+                  <span class="stacked-text-number">{quoteData.regularMarketPrice.toFixed(2)}</span>
+                </span>
+                <span class="stacked-text">
+                  <span class="stacked-text-text">Bid</span>
+                  <span class="stacked-text-number">{quoteData.bid.toFixed(2)}</span>
+                </span>
+                <span class="stacked-text">
+                  <span class="stacked-text-text">Bid Size</span>
+                  <span class="stacked-text-number">{quoteData.bidSize}</span>
+                </span>
+                <span class="stacked-text">
+                  <span class="stacked-text-text">Ask</span>
+                  <span class="stacked-text-number">{quoteData.ask.toFixed(2)}</span>
+                </span>
+                <span class="stacked-text">
+                  <span class="stacked-text-text">Ask Size</span>
+                  <span class="stacked-text-number">{quoteData.askSize}</span>
+                </span>
+              </p>
             </div>
+
+            <br />
+            <br />
+
+            <div>
+              <h2>Quantity</h2>  
+              <input id="quantity" type="number" value={100} />
+            </div>
+
+            <br />
+
+            <div>
+              <h2>Order Type</h2>
+              <Dropdown options={['Limit', 'Market']} value={'Limit'} />
+              
+            </div>
+
+            <br />
+
+            <div>
+              <h2>Limit Price</h2>  
+              <input id="limit-price" type="number" />
+            </div>
+
+            <br />
+
+            <div>
+              <h2>Duration</h2>
+              <Dropdown options={['Day', 'Week']} value={'Day'} />
+            </div>
+
+            <br />
+            <br />
+            {/* <button onClick={() => console.log(document.getElementById('quantity').value)}>test</button> */}
             <button style={{ backgroundColor: GREEN }} onClick={() => storeController.buyShares(quote, 4, 30.20, quoteData.regularMarketPrice)}>Buy</button>
             <button style={{ backgroundColor: RED }} onClick={() => storeController.sellShares(quote, 1, 129.20, quoteData.regularMarketPrice)}>Sell</button>
           </div>

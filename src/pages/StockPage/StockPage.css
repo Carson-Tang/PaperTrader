@@ -96,9 +96,13 @@ i {
 
 } */
 
+.squish {
+  margin-right: 450px;
+}
+
 .side-drawer {
   height: 100%;
-  background:black;
+  background:#040D14;
   color: white;
   position: fixed;
   top: 70px;
@@ -108,6 +112,7 @@ i {
   box-shadow: 1px 0px 7px rgba(0,0,0,0.5);
   transform: translateX(100%);
   transition: transform 0.3s ease-out;
+/*   border-left: 5px solid #3DB4F2; */
 }
 
 .side-drawer.open {
@@ -117,13 +122,36 @@ i {
 .side-drawer button {
   color: white;
   border: none;
-  margin-left: 10px;
+  margin-left: 25px;
   border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
-  padding: 5px 10px;
+  padding: 10px 60px;
   outline: none;
   font-weight: bold;
+}
+
+.side-drawer-info .stacked-text-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: 25px;
+}
+
+.side-drawer-info .stacked-text {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0.5rem;
+}
+
+.side-drawer-info .stacked-text-text {
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.side-drawer-info .stacked-text-number {
+  line-height: 1.5;
+  font-weight: bolder;
 }
 
 .react-stockchart {
@@ -132,4 +160,36 @@ i {
 
 .margin-top {
   min-width: 0;
+}
+
+.side-drawer .quoteName {
+  padding-left: 20px;
+  padding-top: 30px;
+}
+
+.side-drawer input {
+  border-radius: 2px;
+  font-size: 1rem;
+  border: none;
+  /* padding: 5px 10px; */
+  margin-left: 10px;
+  margin-right: 50px;
+  width: 10ch;
+  float: right;
+
+  border: 1px solid #ccc;
+  color: #333;
+  /* padding-top: 8px; */
+  padding: 8px 20px 8px 10px;
+}
+
+.side-drawer h2 {
+  padding-left: 20px;
+}
+
+.Dropdown-root {
+  padding-left: 205px;
+  padding-right: 50px;
+  margin-top: -25px;
+  margin-bottom: -5px;
 }

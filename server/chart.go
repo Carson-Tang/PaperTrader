@@ -180,12 +180,12 @@ func GetChartBar(w http.ResponseWriter, r *http.Request) {
 		res = append(res, b)	
 	}
 	if iter.Err() != nil {
-		fmt.Println("gg2")
+		//fmt.Println("gg2")
 		fmt.Println(iter.Err())
 		return
 	}
-	fmt.Println("gg")
-	fmt.Println(res)
+	//fmt.Println("gg")
+	//fmt.Println(res)
 	json.NewEncoder(w).Encode(res)
 }
 

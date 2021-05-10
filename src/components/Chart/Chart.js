@@ -23,6 +23,7 @@ import { last } from "react-stockcharts/lib/utils";
 
 class AreaChartWithEdge extends React.Component {
 	render() {
+		console.log(this.props)
 		const { type, data: initialData, width, ratio } = this.props;
 
 		const xScaleProvider = discontinuousTimeScaleProvider

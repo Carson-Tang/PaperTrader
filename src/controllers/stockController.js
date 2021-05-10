@@ -57,7 +57,8 @@ stockController.getStockChart = async (quote, duration, interval) => {
     });
     return res;
   }
-  return [];
+  console.log('emptydata')
+  return null;
 }
 
 stockController.getStock = async (quote) => {
